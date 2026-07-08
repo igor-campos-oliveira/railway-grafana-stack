@@ -5,6 +5,14 @@ scrape_configs:
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
+  
+  - job_name: "prometheus-exporter"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["prometheus-exporter.railway.internal:3000"]
+        labels:
+          app: "prometheus-exporter"
+          environment: "prod"
 
   # - job_name: 'example_api'
   #   scheme: http
