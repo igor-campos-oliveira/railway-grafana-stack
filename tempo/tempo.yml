@@ -1,79 +1,81 @@
-multitenancy_enabled: false
+auth_enabled: false
 
-  server:
-    http_listen_port: 3200
-    grpc_listen_port: 9095
-    http_server_read_timeout: 30s
-    http_server_write_timeout: 30s
+server:
+  http_listen_port: 3200
+  grpc_listen_port: 9095
+  http_server_read_timeout: 30s
+  http_server_write_timeout: 30s
 
-  distributor:
-    log_received_spans:
-      enabled: true
-    receivers:
-      otlp:
-        protocols:
-          grpc:
-            endpoint: 0.0.0.0:4317
-          http:
-            endpoint: 0.0.0.0:4318
+distributor:
+  log_received_spans:
+    enabled: true
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
 
-  ingester:
-    trace_idle_period: 10s
-    max_block_duration: 5m
+ingester:
+  trace_idle_period: 10s
+  max_block_duration: 5m
 
-  querier:
-    frontend_worker:
-      frontend_address: 127.0.0.1:9095
-    max_concurrent_queries: 20
-    search:
-      query_timeout: 30s
-    trace_by_id:
-      query_timeout: 10s
+querier:
+  frontend_worker:
+    frontend_address: 127.0.0.1:9095
+  max_concurrent_queries: 20
+  search:
+    query_timeout: 30s
+  trace_by_id:
+    query_timeout: 10s
 
-  query_frontend:
-    max_outstanding_per_tenant: 2000
-    max_retries: 3
-    search:
-      concurrent_jobs: 1000
-      max_spans_per_span_set: 100
-      target_bytes_per_job: 104857600
-      query_backend_after: 15m
-    metrics:
-      concurrent_jobs: 1000
-      duration_slo: 0s
-      interval: 5m
-      max_duration: 3h
-      query_backend_after: 15m
-      target_bytes_per_job: 104857600
-      throughput_bytes_slo: 0
-    trace_by_id:
-      query_shards: 50
+query_frontend:
+  max_outstanding_per_tenant: 2000
+  max_retries: 3
+  search:
+    concurrent_jobs: 1000
+    max_spans_per_span_set: 100
+    target_bytes_per_job: 104857600
+    query_backend_after: 15m
+  metrics:
+    concurrent_jobs: 1000
+    duration_slo: 0s
+    interval: 5m
+    max_duration: 3h
+    query_backend_after: 15m
+    target_bytes_per_job: 104857600
+    throughput_bytes_slo: 0
+  trace_by_id:
+    query_shards: 50
 
-  metrics_generator:
-    ring:
-      kvstore:
-        store: memberlist
-    storage:
-      path: /var/tempo/generator
-
-  overrides:
-    defaults:
-      metrics_generator:
-        processors: [span-metrics, service-graphs]
-
+metrics_generator:
+  ring:
+    kvstore:
+      store: memberlist
   storage:
-    trace:
-      backend: local
-      local:
-        path: /var/tempo/traces
-      wal:
-        path: /var/tempo/wal
-      blocklist_poll: 5m
-      pool:
-        max_workers: 400
-        queue_depth: 20000
+    path: /var/tempo/generator
+  processor:
+    span_metrics:
+    service_graphs:
 
-  memberlist:
-    bind_addr:
-      - 0.0.0.0
-    join_members: []
+overrides:
+  defaults:
+    metrics_generator:
+      processors: [span-metrics, service-graphs]
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/traces
+    wal:
+      path: /var/tempo/wal
+    blocklist_poll: 5m
+    pool:
+      max_workers: 400
+      queue_depth: 20000
+
+memberlist:
+  bind_addr:
+    - 0.0.0.0
