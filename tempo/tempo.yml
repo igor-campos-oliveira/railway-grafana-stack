@@ -50,19 +50,20 @@ query_frontend:
     query_shards: 50
 
 metrics_generator:
-  ring:
-    kvstore:
-      store: memberlist
   storage:
-    path: /var/tempo/generator
+    path: /var/tempo/generator/wal
+  traces_storage:
+    path: /var/tempo/generator/traces
   processor:
     span_metrics:
     service_graphs:
+    local_blocks:
+      flush_to_storage: true
 
 overrides:
   defaults:
     metrics_generator:
-      processors: [span-metrics, service-graphs]
+      processors: [span-metrics, service-graphs, local-blocks]
 
 storage:
   trace:
@@ -75,7 +76,3 @@ storage:
     pool:
       max_workers: 400
       queue_depth: 20000
-
-memberlist:
-  bind_addr:
-    - 0.0.0.0
